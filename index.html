@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tasmat Development — Инвестиционный девелопмент</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ee;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --dark: #111111;
+    --mid: #1e1e1e;
+    --text-muted: #888;
+    --border: rgba(201,168,76,0.2);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Manrope', sans-serif; overflow-x: hidden; }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: 0.5;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 60px;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.95), transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+  .logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; letter-spacing: 2px; color: var(--gold); text-decoration: none; }
+  .logo span { color: var(--white); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.3s; }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta { background: var(--gold) !important; color: var(--black) !important; padding: 10px 24px; border-radius: 2px; font-weight: 700 !important; }
+  .nav-cta:hover { background: var(--gold-light) !important; }
+
+  .hero {
+    min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; padding: 120px 60px 80px; position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 70% 50%, rgba(201,168,76,0.07) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 20% 80%, rgba(201,168,76,0.04) 0%, transparent 60%);
+  }
+  .hero-ring {
+    position: absolute; right: 5%; top: 50%; transform: translateY(-50%);
+    width: 500px; height: 500px; pointer-events: none;
+  }
+  .hero-ring::before, .hero-ring::after {
+    content: ''; position: absolute; border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.1);
+  }
+  .hero-ring::before { inset: 0; animation: rotateSlow 40s linear infinite; }
+  .hero-ring::after { inset: 60px; border-color: rgba(201,168,76,0.06); animation: rotateSlow 25s linear infinite reverse; }
+  @keyframes rotateSlow { to { transform: rotate(360deg); } }
+
+  .hero-content { position: relative; z-index: 1; }
+  .hero-label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 32px; display: flex; align-items: center; gap: 12px; }
+  .hero-label::before { content: ''; display: block; width: 40px; height: 1px; background: var(--gold); }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(44px, 5vw, 72px); font-weight: 900; line-height: 1.05; margin-bottom: 28px; letter-spacing: -1px; }
+  .hero h1 em { font-style: italic; color: var(--gold); }
+  .hero-desc { font-size: 17px; color: #aaa; line-height: 1.7; max-width: 480px; margin-bottom: 48px; }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary { background: var(--gold); color: var(--black); padding: 16px 36px; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border: none; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.3s; border-radius: 2px; }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(201,168,76,0.3); }
+  .btn-outline { background: transparent; color: var(--white); padding: 16px 36px; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.3s; border-radius: 2px; }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+  .hero-stats { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
+  .stat-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 32px 40px; min-width: 240px; position: relative; overflow: hidden; transition: border-color 0.3s; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--gold); }
+  .stat-card:hover { border-color: var(--gold); }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 700; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+  .stat-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  section { padding: 100px 60px; }
+  .section-header { margin-bottom: 60px; }
+  .section-label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .section-label::before { content: ''; display: block; width: 40px; height: 1px; background: var(--gold); }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(32px, 3.5vw, 52px); font-weight: 700; line-height: 1.1; max-width: 700px; }
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  .strategies { background: var(--dark); }
+  .strategies-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 60px; }
+  .strategy-card { background: var(--mid); padding: 48px 40px; position: relative; overflow: hidden; transition: background 0.4s; }
+  .strategy-card:hover { background: #242424; }
+  .strategy-card::after { content: ''; position: absolute; bottom: 0; left: 0; height: 2px; width: 0; background: var(--gold); transition: width 0.4s; }
+  .strategy-card:hover::after { width: 100%; }
+  .strategy-num { font-family: 'Playfair Display', serif; font-size: 64px; font-weight: 900; color: rgba(201,168,76,0.08); position: absolute; top: 20px; right: 30px; line-height: 1; }
+  .strategy-icon { font-size: 36px; margin-bottom: 28px; display: block; }
+  .strategy-card h3 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 16px; line-height: 1.3; }
+  .strategy-card p { font-size: 14px; color: #999; line-height: 1.7; }
+  .strategy-link { display: inline-flex; align-items: center; gap: 8px; color: var(--gold); font-size: 12px; font-weight: 700; text-decoration: none; margin-top: 28px; letter-spacing: 1px; text-transform: uppercase; transition: gap 0.3s; }
+  .strategy-link:hover { gap: 14px; }
+
+  .models { background: var(--black); }
+  .models-list { display: flex; flex-direction: column; gap: 2px; margin-top: 60px; }
+  .model-item { display: grid; grid-template-columns: 80px 1fr auto; align-items: start; gap: 40px; padding: 40px 48px; background: var(--mid); border-left: 3px solid transparent; transition: all 0.3s; }
+  .model-item:hover { background: #1a1a1a; border-left-color: var(--gold); }
+  .model-num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700; color: var(--gold); opacity: 0.3; line-height: 1; padding-top: 4px; }
+  .model-body h3 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+  .model-body p { font-size: 14px; color: #888; line-height: 1.7; max-width: 560px; }
+  .model-badge { background: rgba(201,168,76,0.1); border: 1px solid var(--border); padding: 8px 20px; font-size: 12px; color: var(--gold); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+
+  .principles { background: var(--dark); }
+  .principles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; margin-top: 60px; }
+  .principle-item { padding: 40px; background: var(--mid); display: flex; gap: 24px; transition: background 0.3s; }
+  .principle-item:hover { background: #222; }
+  .principle-num { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; color: var(--gold); opacity: 0.2; line-height: 1; flex-shrink: 0; width: 60px; }
+  .principle-content h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .principle-content p { font-size: 13px; color: #888; line-height: 1.6; }
+
+  .concepts { background: var(--black); }
+  .concepts-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 60px; }
+  .concept-card { padding: 36px 28px; background: var(--mid); transition: background 0.3s; }
+  .concept-card:hover { background: #222; }
+  .concept-icon { font-size: 32px; margin-bottom: 20px; display: block; }
+  .concept-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; line-height: 1.3; }
+  .concept-card p { font-size: 13px; color: #777; line-height: 1.6; }
+
+  .safety-wrap { background: var(--dark); padding: 100px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+  .safety-list { display: flex; flex-direction: column; gap: 2px; margin-top: 60px; }
+  .safety-item { padding: 28px 32px; background: var(--mid); display: flex; align-items: flex-start; gap: 20px; border-left: 2px solid transparent; transition: all 0.3s; }
+  .safety-item:hover { background: #222; border-left-color: var(--gold); }
+  .safety-check { width: 28px; height: 28px; border: 1px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--gold); font-size: 12px; margin-top: 2px; }
+  .safety-text h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .safety-text p { font-size: 13px; color: #888; line-height: 1.6; }
+  .safety-visual { position: sticky; top: 120px; }
+  .safety-card-big { background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(201,168,76,0.02)); border: 1px solid var(--border); padding: 60px; position: relative; overflow: hidden; }
+  .big-num { font-family: 'Playfair Display', serif; font-size: 80px; font-weight: 900; color: var(--gold); line-height: 1; margin-bottom: 16px; }
+  .big-text { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; line-height: 1.3; margin-bottom: 16px; }
+  .big-sub { font-size: 14px; color: #888; line-height: 1.7; margin-bottom: 40px; }
+
+  .steps-section { background: var(--black); }
+  .steps-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-top: 60px; }
+  .step-item { padding: 32px 20px; background: var(--mid); transition: background 0.3s; }
+  .step-item:hover { background: #222; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; color: rgba(201,168,76,0.12); line-height: 1; margin-bottom: 20px; }
+  .step-item h3 { font-size: 13px; font-weight: 700; margin-bottom: 10px; line-height: 1.4; }
+  .step-item p { font-size: 12px; color: #777; line-height: 1.6; }
+
+  .faq-section { background: var(--dark); }
+  .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 60px; }
+  .faq-item { padding: 36px 40px; background: var(--mid); transition: background 0.3s; }
+  .faq-item:hover { background: #222; }
+  .faq-q { font-size: 15px; font-weight: 700; margin-bottom: 14px; line-height: 1.4; display: flex; align-items: flex-start; gap: 12px; }
+  .faq-q::before { content: 'В'; color: var(--gold); font-family: 'Playfair Display', serif; font-size: 18px; flex-shrink: 0; line-height: 1.2; }
+  .faq-a { font-size: 13px; color: #888; line-height: 1.7; padding-left: 26px; }
+
+  .about-strip { background: var(--mid); padding: 80px 60px; display: grid; grid-template-columns: 1fr 1px 1fr 1px 1fr; gap: 0; align-items: start; }
+  .about-div { background: var(--border); }
+  .about-col { padding: 0 60px; }
+  .about-col:first-child { padding-left: 0; }
+  .about-col:last-child { padding-right: 0; }
+  .about-col h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 16px; color: var(--gold); line-height: 1.3; }
+  .about-col p { font-size: 14px; color: #888; line-height: 1.7; }
+
+  .cta-section { background: var(--black); text-align: center; padding: 120px 60px; position: relative; overflow: hidden; }
+  .cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 50%, rgba(201,168,76,0.08), transparent); pointer-events: none; }
+  .cta-section h2 { font-family: 'Playfair Display', serif; font-size: clamp(36px, 5vw, 64px); font-weight: 900; margin-bottom: 24px; position: relative; }
+  .cta-section h2 em { font-style: italic; color: var(--gold); }
+  .cta-section .sub { font-size: 17px; color: #888; max-width: 560px; margin: 0 auto 48px; line-height: 1.7; position: relative; }
+  .form-inline { display: flex; max-width: 520px; margin: 0 auto; position: relative; }
+  .form-inline input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-right: none; padding: 18px 24px; color: var(--white); font-family: 'Manrope', sans-serif; font-size: 14px; outline: none; transition: border-color 0.3s; border-radius: 2px 0 0 2px; }
+  .form-inline input:focus { border-color: var(--gold); }
+  .form-inline input::placeholder { color: #555; }
+  .form-inline button { background: var(--gold); color: var(--black); border: none; padding: 18px 28px; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.3s; border-radius: 0 2px 2px 0; white-space: nowrap; }
+  .form-inline button:hover { background: var(--gold-light); }
+  .form-note { margin-top: 16px; font-size: 12px; color: #555; position: relative; }
+
+  footer { background: #050505; border-top: 1px solid var(--border); padding: 60px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 60px; }
+  .footer-brand .logo { display: block; margin-bottom: 16px; }
+  .footer-brand p { font-size: 13px; color: #666; line-height: 1.7; max-width: 260px; }
+  .footer-col h4 { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-col a { color: #666; text-decoration: none; font-size: 14px; transition: color 0.3s; }
+  .footer-col a:hover { color: var(--white); }
+  .footer-bottom { background: #050505; padding: 24px 60px; border-top: 1px solid rgba(255,255,255,0.04); display: flex; justify-content: space-between; align-items: center; }
+  .footer-bottom p { font-size: 12px; color: #444; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: #555; text-decoration: none; font-size: 12px; transition: color 0.3s; }
+  .footer-links a:hover { color: var(--gold); }
+
+  .gold-divider { height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); opacity: 0.2; }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 1024px) {
+    nav { padding: 18px 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 110px 24px 60px; }
+    .hero-stats { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+    .stat-card { min-width: 140px; padding: 20px 24px; }
+    section, .safety-wrap, .about-strip, .cta-section { padding: 60px 24px; }
+    footer, .footer-bottom { padding: 40px 24px; }
+    .strategies-grid, .concepts-grid, .faq-grid, .principles-grid { grid-template-columns: 1fr; }
+    .models-list .model-item { grid-template-columns: 50px 1fr; }
+    .model-badge { display: none; }
+    .safety-wrap { grid-template-columns: 1fr; }
+    .safety-visual { display: none; }
+    .steps-grid { grid-template-columns: 1fr 1fr; }
+    .about-strip { grid-template-columns: 1fr; gap: 40px; }
+    .about-div { display: none; }
+    .about-col { padding: 0; }
+    footer { grid-template-columns: 1fr; gap: 40px; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+    .form-inline { flex-direction: column; }
+    .form-inline input { border-right: 1px solid var(--border); border-bottom: none; border-radius: 2px 2px 0 0; }
+    .form-inline button { border-radius: 0 0 2px 2px; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="main-nav">
+  <a href="#" class="logo">TASMAT <span>Development</span></a>
+  <ul class="nav-links">
+    <li><a href="#strategies">Стратегии</a></li>
+    <li><a href="#models">Модели</a></li>
+    <li><a href="#principles">Принципы</a></li>
+    <li><a href="#concepts">Концепции</a></li>
+    <li><a href="#safety">Безопасность</a></li>
+    <li><a href="#faq">Вопросы</a></li>
+    <li><a href="#contact" class="nav-cta">Консультация</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-ring"></div>
+  <div class="hero-content">
+    <div class="hero-label">Инвестиционный девелопмент</div>
+    <h1>Превращаем бетон<br>в <em>деньги</em></h1>
+    <p class="hero-desc">Делаем из неликвидных участков и пустых помещений успешные арендные бизнесы. Стабильный доход от 8% в валюте — под ключ, с нуля до первых дивидендов.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Стать инвестором</a>
+      <a href="#strategies" class="btn-outline">Узнать больше</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-card reveal">
+      <div class="stat-num">8–30%</div>
+      <div class="stat-label">Доходность в год</div>
+    </div>
+    <div class="stat-card reveal" style="transition-delay:0.12s">
+      <div class="stat-num">10+</div>
+      <div class="stat-label">Лет — длина контрактов</div>
+    </div>
+    <div class="stat-card reveal" style="transition-delay:0.24s">
+      <div class="stat-num">70/30</div>
+      <div class="stat-label">Приоритет инвестора</div>
+    </div>
+  </div>
+</div>
+
+<div class="gold-divider"></div>
+
+<!-- STRATEGIES -->
+<section class="strategies" id="strategies">
+  <div class="section-header reveal">
+    <div class="section-label">01 — Стратегии</div>
+    <h2 class="section-title">Три пути к <em>арендному доходу</em></h2>
+  </div>
+  <div class="strategies-grid">
+    <div class="strategy-card reveal">
+      <div class="strategy-num">01</div>
+      <span class="strategy-icon">🏢</span>
+      <h3>Субарендный бизнес</h3>
+      <p>Арендуем целое помещение, грамотно зонируем и сдаём в субаренду. Идеально для быстрого старта и диверсификации арендного потока.</p>
+      <a href="#contact" class="strategy-link">Подробнее →</a>
+    </div>
+    <div class="strategy-card reveal" style="transition-delay:0.1s">
+      <div class="strategy-num">02</div>
+      <span class="strategy-icon">🏗️</span>
+      <h3>Готовый арендный бизнес «под ключ»</h3>
+      <p>Находим объект, проводим реновацию или строим с нуля. Сразу закрепляем доход, подписывая долгосрочный договор с федеральным арендатором.</p>
+      <a href="#contact" class="strategy-link">Подробнее →</a>
+    </div>
+    <div class="strategy-card reveal" style="transition-delay:0.2s">
+      <div class="strategy-num">03</div>
+      <span class="strategy-icon">💡</span>
+      <h3>Собственные авторские концепции</h3>
+      <p>Создаём и запускаем бизнес, где недвижимость — основа, а локация и идея — ключ к прибыли. Управляем объектом и операционной деятельностью.</p>
+      <a href="#contact" class="strategy-link">Подробнее →</a>
+    </div>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
+<!-- MODELS -->
+<section class="models" id="models">
+  <div class="section-header reveal">
+    <div class="section-label">02 — Модели сотрудничества</div>
+    <h2 class="section-title">Инвестиционные <em>форматы</em></h2>
+  </div>
+  <div class="models-list">
+    <div class="model-item reveal">
+      <div class="model-num">01</div>
+      <div class="model-body">
+        <h3>Проект «под ключ» с фиксированной стоимостью</h3>
+        <p>Создаём готовый арендный объект специально для вас. Работаем за фиксированный гонорар с поэтапной оплатой и полной отчётностью на каждом шаге.</p>
+      </div>
+      <div class="model-badge">Фиксированный гонорар</div>
+    </div>
+    <div class="model-item reveal" style="transition-delay:0.1s">
+      <div class="model-num">02</div>
+      <div class="model-body">
+        <h3>Прямые инвестиции в конкретный объект</h3>
+        <p>Вы приобретаете долю в ООО, которому принадлежит объект. До возврата вложений распределяем прибыль 70/30 в вашу пользу, после — согласно долям.</p>
+      </div>
+      <div class="model-badge">70/30 в вашу пользу</div>
+    </div>
+    <div class="model-item reveal" style="transition-delay:0.2s">
+      <div class="model-num">03</div>
+      <div class="model-body">
+        <h3>Стратегическое партнёрство с Управляющей Компанией</h3>
+        <p>Инвестируя в долю Tasmat Development, вы получаете дивиденды от всего нашего портфеля проектов пропорционально вашей доле.</p>
+      </div>
+      <div class="model-badge">Весь портфель</div>
+    </div>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
+<!-- PRINCIPLES -->
+<section class="principles" id="principles">
+  <div class="section-header reveal">
+    <div class="section-label">03 — Принципы отбора</div>
+    <h2 class="section-title">6 критериев отбора <em>каждого актива</em></h2>
+  </div>
+  <div class="principles-grid">
+    <div class="principle-item reveal">
+      <div class="principle-num">1</div>
+      <div class="principle-content">
+        <h3>Трафик и доступность</h3>
+        <p>Анализируем пешеходный и транспортный поток — основа будущей заполняемости объекта.</p>
+      </div>
+    </div>
+    <div class="principle-item reveal" style="transition-delay:0.08s">
+      <div class="principle-num">2</div>
+      <div class="principle-content">
+        <h3>Покупательская способность</h3>
+        <p>Оцениваем средний чек и уровень жизни в районе, чтобы спрос на услуги арендатора был стабильным.</p>
+      </div>
+    </div>
+    <div class="principle-item reveal" style="transition-delay:0.04s">
+      <div class="principle-num">3</div>
+      <div class="principle-content">
+        <h3>Долгосрочная аренда</h3>
+        <p>Работаем с надёжными арендаторами, готовыми заключить договор на 10+ лет без права досрочного расторжения.</p>
+      </div>
+    </div>
+    <div class="principle-item reveal" style="transition-delay:0.12s">
+      <div class="principle-num">4</div>
+      <div class="principle-content">
+        <h3>Гарантированная индексация</h3>
+        <p>Закладываем ежегодный рост арендной ставки в договор — защита от инфляции и постоянный рост дохода.</p>
+      </div>
+    </div>
+    <div class="principle-item reveal" style="transition-delay:0.08s">
+      <div class="principle-num">5</div>
+      <div class="principle-content">
+        <h3>Ликвидность на выход</h3>
+        <p>Оцениваем потенциальных покупателей объекта ещё на входе, чтобы вы могли выйти в любой момент.</p>
+      </div>
+    </div>
+    <div class="principle-item reveal" style="transition-delay:0.16s">
+      <div class="principle-num">6</div>
+      <div class="principle-content">
+        <h3>Финансовый спред и маржа</h3>
+        <p>Сразу считаем разницу между затратами, доходом от аренды и ценой будущей продажи.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
+<!-- CONCEPTS -->
+<section class="concepts" id="concepts">
+  <div class="section-header reveal">
+    <div class="section-label">04 — Концепции</div>
+    <h2 class="section-title">Какие бизнесы <em>мы запускаем</em></h2>
+  </div>
+  <div class="concepts-grid">
+    <div class="concept-card reveal"><span class="concept-icon">💄</span><h3>Красота и здоровье</h3><p>Салоны, спа, студии. Лояльная аудитория и повторяющиеся платежи.</p></div>
+    <div class="concept-card reveal" style="transition-delay:0.05s"><span class="concept-icon">🏨</span><h3>Гостиничный бизнес</h3><p>Апарт-отели, хостелы. Высокая оборачиваемость и доходность.</p></div>
+    <div class="concept-card reveal" style="transition-delay:0.1s"><span class="concept-icon">🏥</span><h3>Медицина</h3><p>Клиники, стоматологии. Высокомаржинальный бизнес со стабильным спросом.</p></div>
+    <div class="concept-card reveal" style="transition-delay:0.15s"><span class="concept-icon">🚗</span><h3>Автосервисы и мойки</h3><p>Высокая маржинальность при правильной локации и трафике.</p></div>
+    <div class="concept-card reveal" style="transition-delay:0.05s"><span class="concept-icon">🛒</span><h3>Магазины у дома</h3><p>Устойчивый к кризисам бизнес с длительными договорами аренды.</p></div>
+    <div class="concept-card reveal" style="transition-delay:0.1s"><span class="concept-icon">🍽️</span><h3>Общепит и фуд-корты</h3><p>Высокая выручка с квадратного метра при правильной концепции.</p></div>
+    <div class="concept-card reveal" style="transition-delay:0.15s"><span class="concept-icon">📦</span><h3>Логистика и склады</h3><p>Растущий рынок e-commerce. Долгосрочные контракты с бизнесом.</p></div>
+    <div class="concept-card reveal" style="transition-delay:0.2s"><span class="concept-icon">💼</span><h3>Коворкинги и офисы</h3><p>Высокая заполняемость и премиальная ставка через формат сообщества.</p></div>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
+<!-- SAFETY -->
+<div class="safety-wrap" id="safety">
+  <div>
+    <div class="section-header reveal">
+      <div class="section-label">05 — Безопасность</div>
+      <h2 class="section-title">Ваши инвестиции<br>под <em>защитой</em></h2>
+    </div>
+    <div class="safety-list">
+      <div class="safety-item reveal"><div class="safety-check">✓</div><div class="safety-text"><h3>Прозрачность до каждой копейки</h3><p>Сметы, чеки, фото- и видеоотчёты с объекта в личном кабинете. Еженедельная отчётность — стандарт.</p></div></div>
+      <div class="safety-item reveal" style="transition-delay:0.05s"><div class="safety-check">✓</div><div class="safety-text"><h3>Юридическая чистота активов</h3><p>Каждый объект — отдельное ООО. Ваша доля закреплена в нём. Проблемы одного проекта не влияют на остальные.</p></div></div>
+      <div class="safety-item reveal" style="transition-delay:0.1s"><div class="safety-check">✓</div><div class="safety-text"><h3>Доходность инвестора — приоритет №1</h3><p>Финансовые потоки выстроены так: сначала ваш доход, потом наша премия. Прописано в договоре.</p></div></div>
+      <div class="safety-item reveal" style="transition-delay:0.15s"><div class="safety-check">✓</div><div class="safety-text"><h3>Право вето на ключевые решения</h3><p>Крупные сделки, залоги, изменение стратегии — только с вашего согласования, как прописано в договоре.</p></div></div>
+      <div class="safety-item reveal" style="transition-delay:0.2s"><div class="safety-check">✓</div><div class="safety-text"><h3>Открытость управляющей компании</h3><p>При партнёрстве с Tasmat Development вы получаете полный доступ к финансовой отчётности УК.</p></div></div>
+    </div>
+  </div>
+  <div class="safety-visual reveal">
+    <div class="safety-card-big">
+      <div class="big-num">70/30</div>
+      <div class="big-text">Распределение прибыли до возврата ваших вложений</div>
+      <div class="big-sub">Сначала ваш доход — потом наше вознаграждение. Это прописано в каждом договоре и соблюдается без исключений.</div>
+      <a href="#contact" class="btn-primary">Начать инвестировать</a>
+    </div>
+  </div>
+</div>
+
+<div class="gold-divider"></div>
+
+<!-- STEPS -->
+<section class="steps-section" id="steps">
+  <div class="section-header reveal">
+    <div class="section-label">06 — Этапы сделки</div>
+    <h2 class="section-title">От первой встречи до <em>первых дивидендов</em></h2>
+  </div>
+  <div class="steps-grid">
+    <div class="step-item reveal"><div class="step-num">1</div><h3>Обсуждаем цель</h3><p>Вместе решаем, какой доход вы хотите и на какой срок.</p></div>
+    <div class="step-item reveal" style="transition-delay:0.05s"><div class="step-num">2</div><h3>Выбираем или создаём</h3><p>Показываем готовые проекты или рисуем тот, что идеально подходит.</p></div>
+    <div class="step-item reveal" style="transition-delay:0.1s"><div class="step-num">3</div><h3>Фиксируем в договоре</h3><p>Прописываем условия, ваши права и наши обязанности без скрытых пунктов.</p></div>
+    <div class="step-item reveal" style="transition-delay:0.15s"><div class="step-num">4</div><h3>Вносите инвестиции</h3><p>Деньги на спецсчёт. Вы сразу видите это в личном кабинете.</p></div>
+    <div class="step-item reveal" style="transition-delay:0.2s"><div class="step-num">5</div><h3>Наблюдаете онлайн</h3><p>Все чеки, фото и отчёты в личном кабинете в реальном времени.</p></div>
+    <div class="step-item reveal" style="transition-delay:0.25s"><div class="step-num">6</div><h3>Получаете прибыль</h3><p>Как только проект зарабатывает, дивиденды идут вам в первую очередь.</p></div>
+    <div class="step-item reveal" style="transition-delay:0.3s"><div class="step-num">7</div><h3>Растёте или выходите</h3><p>Реинвестируете или продаёте долю по прозрачным правилам из договора.</p></div>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
+<!-- ABOUT -->
+<div class="about-strip">
+  <div class="about-col reveal">
+    <h3>Двойная доходность</h3>
+    <p>Соединяем управление недвижимостью и операционным бизнесом в одну систему. Прибыль от аренды плюс доход от работы концепции на вашей площади.</p>
+  </div>
+  <div class="about-div"></div>
+  <div class="about-col reveal" style="transition-delay:0.1s">
+    <h3>Проверенный алгоритм</h3>
+    <p>Отбираем активы по шести строгим критериям. Каждый этап от концепции до запуска просчитан и стандартизирован. Минимум рисков, максимум результата.</p>
+  </div>
+  <div class="about-div"></div>
+  <div class="about-col reveal" style="transition-delay:0.2s">
+    <h3>Ваши дивиденды — наша цель</h3>
+    <p>Юридическая чистота, отдельный счёт на каждый проект, личный кабинет с полной отчётностью и приоритет выплат инвестору.</p>
+  </div>
+</div>
+
+<div class="gold-divider"></div>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="section-header reveal">
+    <div class="section-label">07 — Вопросы и ответы</div>
+    <h2 class="section-title">Ответы на <em>важные вопросы</em></h2>
+  </div>
+  <div class="faq-grid">
+    <div class="faq-item reveal">
+      <div class="faq-q">Как я могу контролировать свои деньги?</div>
+      <div class="faq-a">Полный контроль через личный кабинет: сметы, сканы чеков, фото и видео с объекта. Финансовая отчётность — еженедельная. Вы видите каждую платёжку, а не просто цифры на слово.</div>
+    </div>
+    <div class="faq-item reveal" style="transition-delay:0.05s">
+      <div class="faq-q">Если с одним объектом проблемы — пострадают другие?</div>
+      <div class="faq-a">Нет. Каждый объект — отдельное ООО. Ваша доля закреплена именно в нём. Риски строго ограничены рамками конкретного проекта.</div>
+    </div>
+    <div class="faq-item reveal" style="transition-delay:0.05s">
+      <div class="faq-q">Как я получу прибыль и будут ли задержки?</div>
+      <div class="faq-a">Выплата дивидендов — приоритет №1. Потоки выстроены так: сначала ваш доход, потом наша премия. Платежи строго по графику из договора, без исключений.</div>
+    </div>
+    <div class="faq-item reveal" style="transition-delay:0.1s">
+      <div class="faq-q">Захочу выйти из проекта — смогу продать долю?</div>
+      <div class="faq-a">Да. При отборе актива мы сразу оцениваем его ликвидность. Помогаем найти покупателя через нашу сеть или выкупаем сами по оговорённым заранее принципам.</div>
+    </div>
+    <div class="faq-item reveal" style="transition-delay:0.1s">
+      <div class="faq-q">Вы примете важное решение без меня?</div>
+      <div class="faq-a">Ваше право голоса защищено юридически. Крупные сделки, залоги, смена стратегии — только с вашего обязательного согласования по договору.</div>
+    </div>
+    <div class="faq-item reveal" style="transition-delay:0.15s">
+      <div class="faq-q">Что я получу в итоге?</div>
+      <div class="faq-a">Предсказуемый пассивный доход от дивидендов и рост стоимости доли. А главное — время и спокойствие, потому что всеми процессами управляем мы.</div>
+    </div>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <h2 class="reveal">Начните зарабатывать<br>на недвижимости <em>сегодня</em></h2>
+  <p class="sub reveal">Бесплатная консультация. В течение 24 часов подготовим персональную финансовую модель и варианты объектов. Конфиденциально и без обязательств.</p>
+  <div class="form-inline reveal">
+    <input type="tel" id="phone" placeholder="+7 (___) ___-__-__">
+    <button onclick="handleSubmit()">Получить консультацию</button>
+  </div>
+  <p class="form-note">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности и декларацией о рисках.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <a href="#" class="logo">TASMAT <span>Development</span></a>
+    <p>Инвестиционный девелопер. Превращаем неликвидную недвижимость в доходные арендные активы под ключ.</p>
+    <br>
+    <p style="color:#444; font-size:12px; margin-top:8px;">Москва, ул. Новоалексеевская, д. 16, к. 4</p>
+    <p style="color:#444; font-size:12px; margin-top:4px;"><a href="mailto:ask@tasmat.ru" style="color:#666; text-decoration:none;">ask@tasmat.ru</a></p>
+  </div>
+  <div class="footer-col">
+    <h4>Навигация</h4>
+    <ul>
+      <li><a href="#strategies">Стратегии инвестирования</a></li>
+      <li><a href="#models">Инвестиционные модели</a></li>
+      <li><a href="#principles">Принципы отбора активов</a></li>
+      <li><a href="#concepts">Запуск концепций</a></li>
+      <li><a href="#safety">Безопасность инвестора</a></li>
+      <li><a href="#faq">Ответы на вопросы</a></li>
+      <li><a href="#contact">Контакты</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Правовые документы</h4>
+    <ul>
+      <li><a href="#">Политика конфиденциальности</a></li>
+      <li><a href="#">Публичная оферта</a></li>
+      <li><a href="#">Декларация о рисках</a></li>
+      <li><a href="#">Документы компании</a></li>
+      <li><a href="https://t.me/tasmat_development" target="_blank">Telegram-канал</a></li>
+    </ul>
+    <br>
+    <p style="font-size:12px; color:#444; line-height:1.6;">Данные на сайте носят информационный характер и не являются публичной офертой.</p>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2024 Tasmat Development — инвестиционный девелопмент</p>
+  <div class="footer-links">
+    <a href="#">Конфиденциальность</a>
+    <a href="#">Оферта</a>
+    <a href="#">Риски</a>
+  </div>
+</div>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Nav on scroll
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('main-nav');
+    if (window.scrollY > 60) {
+      nav.style.background = 'rgba(10,10,10,0.97)';
+      nav.style.backdropFilter = 'blur(20px)';
+    } else {
+      nav.style.background = 'linear-gradient(to bottom, rgba(10,10,10,0.95), transparent)';
+    }
+  });
+
+  // Submit
+  function handleSubmit() {
+    const phone = document.getElementById('phone').value;
+    if (!phone || phone.length < 5) { alert('Пожалуйста, введите номер телефона'); return; }
+    alert('Спасибо! Мы свяжемся с вами в течение 24 часов. Конфиденциально и без обязательств.');
+    document.getElementById('phone').value = '';
+  }
+
+  // Phone mask
+  document.getElementById('phone').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g, '');
+    if (v.startsWith('7') || v.startsWith('8')) v = v.slice(1);
+    let r = '+7';
+    if (v.length > 0) r += ' (' + v.slice(0,3);
+    if (v.length >= 3) r += ') ' + v.slice(3,6);
+    if (v.length >= 6) r += '-' + v.slice(6,8);
+    if (v.length >= 8) r += '-' + v.slice(8,10);
+    this.value = r;
+  });
+</script>
+</body>
+</html>
